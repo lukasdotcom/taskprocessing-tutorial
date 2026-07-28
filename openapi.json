@@ -1,9 +1,9 @@
 {
     "openapi": "3.0.3",
     "info": {
-        "title": "app_template",
+        "title": "taskprocessing-tutorial",
         "version": "0.0.1",
-        "description": "An example summary",
+        "description": "Record voice messages and create cards",
         "license": {
             "name": "AGPL-3.0-or-later"
         }
@@ -47,10 +47,10 @@
         }
     },
     "paths": {
-        "/ocs/v2.php/apps/app_template/api": {
-            "get": {
-                "operationId": "api-index",
-                "summary": "An example API endpoint",
+        "/ocs/v2.php/apps/taskprocessing-tutorial/api/cards": {
+            "post": {
+                "operationId": "api-create-card",
+                "summary": "Create a card from a voice message",
                 "tags": [
                     "api"
                 ],
@@ -76,7 +76,56 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Data returned",
+                        "description": "Card created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "required": [
+                                        "ocs"
+                                    ],
+                                    "properties": {
+                                        "ocs": {
+                                            "type": "object",
+                                            "required": [
+                                                "meta",
+                                                "data"
+                                            ],
+                                            "properties": {
+                                                "meta": {
+                                                    "$ref": "#/components/schemas/OCSMeta"
+                                                },
+                                                "data": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "title",
+                                                        "description",
+                                                        "tags"
+                                                    ],
+                                                    "properties": {
+                                                        "title": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": {
+                                                            "type": "string"
+                                                        },
+                                                        "tags": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "No audio file provided",
                         "content": {
                             "application/json": {
                                 "schema": {
