@@ -189,8 +189,9 @@ export default {
 				})
 
 				this.clearRecording()
-			} catch {
-				this.error = t('taskprocessing-tutorial', 'Failed to create card.')
+			} catch (e) {
+				this.error = e?.response?.data?.ocs?.data?.message
+					?? t('taskprocessing-tutorial', 'Failed to create card.')
 			} finally {
 				this.isCreating = false
 			}

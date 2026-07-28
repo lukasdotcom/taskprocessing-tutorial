@@ -64,6 +64,7 @@ class ApiController extends OCSController {
 			$description = $this->generateMetadataService->generateDescription();
 			$tags = $this->generateMetadataService->generateTags();
 		} catch (RuntimeException $e) {
+			// Warning: the error might contain sensitive information, so shouldn't just be handed directly to the frontend, but for this tutorial it makes it easier to see the error message and debug
 			return new DataResponse(
 				['message' => $e->getMessage()],
 				Http::STATUS_INTERNAL_SERVER_ERROR,
