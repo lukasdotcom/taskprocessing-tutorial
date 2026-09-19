@@ -11,10 +11,10 @@
 				</h2>
 				<div id="voice-cards-content">
 					<NcNoteCard type="info">
-						{{ t('taskprocessing-tutorial', 'Record a voice message to create a card with auto-generated title, description, and tags.') }}
+						{{ t('taskprocessing-tutorial', 'Record or upload a voice message to create a card with auto-generated title, description, and tags.') }}
 					</NcNoteCard>
 
-					<div class="line">
+					<div class="line actions">
 						<NcButton
 							v-if="!isRecording"
 							type="primary"
@@ -28,6 +28,18 @@
 							@click="stopRecording">
 							{{ t('taskprocessing-tutorial', 'Stop recording') }}
 						</NcButton>
+						<span class="actions-separator">{{ t('taskprocessing-tutorial', 'or') }}</span>
+						<NcButton
+							:disabled="isCreating || isRecording"
+							@click="openFilePicker">
+							{{ t('taskprocessing-tutorial', 'Upload audio file') }}
+						</NcButton>
+						<input
+							ref="audioFileInput"
+							type="file"
+							class="hidden-input"
+							accept="audio/*"
+							@change="onAudioFileSelected">
 					</div>
 
 					<div v-if="recordedUrl" class="line column">
@@ -102,6 +114,7 @@ export default {
 			error: null,
 			recordedBlob: null,
 			recordedUrl: null,
+			audioFileName: null,
 			cards: [],
 			nextCardId: 1,
 		}
@@ -116,6 +129,25 @@ export default {
 			}
 			this.recordedBlob = null
 			this.recordedUrl = null
+			this.audioFileName = null
+		},
+
+		openFilePicker() {
+			this.$refs.audioFileInput?.click()
+		},
+
+		onAudioFileSelected(event) {
+			const file = event.target.files?.[0]
+			event.target.value = ''
+			if (!file) {
+				return
+			}
+
+			this.error = null
+			this.clearRecording()
+			this.recordedBlob = file
+			this.audioFileName = file.name
+			this.recordedUrl = URL.createObjectURL(file)
 		},
 
 		async startRecording() {
@@ -164,7 +196,7 @@ export default {
 			this.error = null
 
 			const formData = new FormData()
-			formData.append('audio', this.recordedBlob, 'recording.webm')
+			formData.append('audio', this.recordedBlob, this.audioFileName ?? 'recording.webm')
 
 			try {
 				const response = await axios.post(
@@ -219,11 +251,24 @@ export default {
 		align-items: center;
 		margin-top: 12px;
 
+		&.actions {
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+
 		&.column {
 			flex-direction: column;
 			align-items: start;
 			gap: 8px;
 		}
+	}
+
+	.actions-separator {
+		color: var(--color-text-maxcontrast);
+	}
+
+	.hidden-input {
+		display: none;
 	}
 
 	.cards {
